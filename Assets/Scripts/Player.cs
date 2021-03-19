@@ -1,17 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private int _lives = 3;
+    [SerializeField, Range(1, 7)]private int _lives = 3;
     [SerializeField] private float _speed = 3.0f;
+    [SerializeField] private GameObject _laserPrefab = default;
+    [SerializeField] private float _laserRechargeTime = 0.8f;
+
+    private bool _canFire;
     private float _xMaxBounds = 10f;
     private float _xMinBounds = -10f;
     private float _yMaxBounds = 1f;
     private float _yMinBounds = -4f;
-
-    [SerializeField] private GameObject _laserPrefab = default;
 
     private void Start()
     {
@@ -19,12 +20,17 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        CalculateMovement();
+    }
+
+    private void CalculateMovement()
+    {
+        var movement = GetInput();
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Instantiate(_laserPrefab, transform.position, Quaternion.identity);
         }
-        
-        var movement = GetInput();
+
         var velocity = movement * Time.deltaTime * _speed;
         transform.Translate(velocity);
         CheckPosition();
@@ -35,8 +41,7 @@ public class Player : MonoBehaviour
         var hInput = Input.GetAxis("Horizontal");
         var vInput = Input.GetAxis("Vertical");
 
-        var movement = new Vector3(hInput, vInput);
-        return movement;
+        return new Vector3(hInput, vInput);
     }
 
     private void CheckPosition()
@@ -50,5 +55,24 @@ public class Player : MonoBehaviour
             position = new Vector3(_xMinBounds, position.y);
 
         transform.position = position;
+    }
+
+    public void Damage()
+    {
+        _lives--;
+        if (_lives < 1)
+        {
+            SpawnManager.GameOver();
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("EnemyLaser"))
+        {
+            Destroy(other.gameObject);
+            Damage();
+        }
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Laser : MonoBehaviour
@@ -18,7 +16,7 @@ public class Laser : MonoBehaviour
     private void CalculateMovement()
     {
         transform.position += transform.up * Time.deltaTime * _speed;
-        if (transform.position.y > Mathf.Abs(8.0f))
+        if (Mathf.Abs(transform.position.y) > 8.0f)
         {
             Destroy(gameObject);
         }

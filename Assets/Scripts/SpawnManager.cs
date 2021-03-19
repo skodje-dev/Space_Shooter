@@ -1,15 +1,17 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _enemyPrefab;
     [SerializeField] private float _timeBeforeFirstSpawn = 3.0f;
     [SerializeField] private float _minSpawnDelay = 2.0f;
     [SerializeField] private float _maxSpawnDelay = 5.0f;
+    [Space, Header("Spawn")]
+    [SerializeField] private GameObject _enemyPrefab;
+    [SerializeField] private Transform _enemyContainer;
 
-    private bool _gameNotOver = true;
+
+    private static bool _gameNotOver = true;
     
     void Start()
     {
@@ -21,13 +23,20 @@ public class SpawnManager : MonoBehaviour
         yield return new WaitForSeconds(_timeBeforeFirstSpawn);
         while (_gameNotOver)
         {
-            Instantiate(_enemyPrefab);
+            Instantiate(_enemyPrefab,GetRandomSpawnPosition(), Quaternion.identity, _enemyContainer);
             yield return new WaitForSeconds(Random.Range(_minSpawnDelay, _maxSpawnDelay));
         }
+        Destroy(_enemyContainer.gameObject);
     }
 
-    void Update()
+    private Vector3 GetRandomSpawnPosition()
     {
-        
+        float randomXPos = Random.Range(-9.0f, 9.0f);
+        return new Vector3(randomXPos, 8f, 0);
+    }
+
+    public static void GameOver()
+    {
+        _gameNotOver = false;
     }
 }
