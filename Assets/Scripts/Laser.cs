@@ -3,10 +3,6 @@ using UnityEngine;
 public class Laser : MonoBehaviour
 {
     [SerializeField, Tooltip("Laser will travel upwards based on rotation")] private float _speed = 7.0f;
-    void Start()
-    {
-        
-    }
 
     void Update()
     {

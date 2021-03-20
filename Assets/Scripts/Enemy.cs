@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour
 
     [Header("Fire Settings")]
     private float _firstShotDelay = 1.0f;
-    [SerializeField, Range(0.5f, 5.0f)] private float _laserRechargeTime = 2.0f;
+    [SerializeField, Range(0.5f, 5.0f)] private float _shootDelay = 2.0f;
     [SerializeField, Range(0, 100)] private int _variancePct = 0;
     private float _variance; 
 
@@ -20,7 +20,7 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         _canFire = Time.time + _firstShotDelay;
-        _variance = _laserRechargeTime * _variancePct / 100;
+        _variance = _shootDelay * _variancePct / 100;
     }
 
     void Update()
@@ -31,9 +31,9 @@ public class Enemy : MonoBehaviour
             GameObject laser = Instantiate(_laserPrefab, transform.position, Quaternion.Euler(0, 0, 180));
             laser.tag = "EnemyLaser";
             if(_variancePct == 0)
-                _canFire = Time.time + _laserRechargeTime;
+                _canFire = Time.time + _shootDelay;
             else
-                _canFire = Time.time + Random.Range(_laserRechargeTime - _variance, _laserRechargeTime + _variance);
+                _canFire = Time.time + Random.Range(_shootDelay - _variance, _shootDelay + _variance);
         }
     }
 
@@ -48,7 +48,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Laser"))
         {

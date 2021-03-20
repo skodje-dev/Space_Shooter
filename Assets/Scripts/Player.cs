@@ -6,13 +6,13 @@ public class Player : MonoBehaviour
     [SerializeField, Range(1, 7)]private int _lives = 3;
     [SerializeField] private float _speed = 3.0f;
     [SerializeField] private GameObject _laserPrefab = default;
-    [SerializeField] private float _laserRechargeTime = 0.8f;
+    [SerializeField] private float _shootDelay = 0.4f;
 
-    private bool _canFire;
+    private float _canFire = 0f;
     private float _xMaxBounds = 10f;
     private float _xMinBounds = -10f;
-    private float _yMaxBounds = 1f;
-    private float _yMinBounds = -4f;
+    private float _yMaxBounds = .5f;
+    private float _yMinBounds = -3f;
 
     private void Start()
     {
@@ -26,14 +26,20 @@ public class Player : MonoBehaviour
     private void CalculateMovement()
     {
         var movement = GetInput();
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && _canFire < Time.time)
         {
-            Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+            FireLaser();
         }
 
         var velocity = movement * Time.deltaTime * _speed;
         transform.Translate(velocity);
         CheckPosition();
+    }
+
+    private void FireLaser()
+    {
+        _canFire = Time.time + _shootDelay;
+        Instantiate(_laserPrefab, transform.position, Quaternion.identity);
     }
 
     private static Vector3 GetInput()
@@ -67,7 +73,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("EnemyLaser"))
         {
