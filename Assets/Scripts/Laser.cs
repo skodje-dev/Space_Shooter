@@ -22,6 +22,8 @@ public class Laser : MonoBehaviour
         transform.position += _direction * Time.deltaTime * _speed;
         if (Mathf.Abs(transform.position.y) > 8.0f)
         {
+            if (transform.parent) Destroy(transform.parent.gameObject);
+            
             Destroy(gameObject);
         }
     }
