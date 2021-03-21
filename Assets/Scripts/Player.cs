@@ -6,11 +6,12 @@ public class Player : MonoBehaviour
     [SerializeField, Range(1, 7)]private int _lives = 3;
     [SerializeField] private float _speed = 3.0f;
     [SerializeField] private GameObject _laserPrefab = default;
+    [SerializeField] private float _laserSpawnYOffset = 0f;
     [SerializeField] private float _shootDelay = 0.4f;
 
     private float _canFire = 0f;
-    private float _xMaxBounds = 10f;
-    private float _xMinBounds = -10f;
+    private float _xMaxBounds = 9f;
+    private float _xMinBounds = -9f;
     private float _yMaxBounds = .5f;
     private float _yMinBounds = -3f;
 
@@ -39,7 +40,10 @@ public class Player : MonoBehaviour
     private void FireLaser()
     {
         _canFire = Time.time + _shootDelay;
-        Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+
+        Vector3 laserSpawnPos = transform.position;
+        laserSpawnPos.y += _laserSpawnYOffset;
+        Instantiate(_laserPrefab, laserSpawnPos, Quaternion.identity);
     }
 
     private static Vector3 GetInput()

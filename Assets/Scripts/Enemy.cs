@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
+using Quaternion = UnityEngine.Quaternion;
 using Random = UnityEngine.Random;
+using Vector3 = UnityEngine.Vector3;
 
 public class Enemy : MonoBehaviour
 {
@@ -14,7 +17,7 @@ public class Enemy : MonoBehaviour
     private float _firstShotDelay = 1.0f;
     [SerializeField, Range(0.5f, 5.0f)] private float _shootDelay = 2.0f;
     [SerializeField, Range(0, 100)] private int _variancePct = 0;
-    private float _variance; 
+    private float _variance;
 
     private float _canFire;
     void Start()
@@ -28,8 +31,14 @@ public class Enemy : MonoBehaviour
         CalculateMovement();
         if (_canFire < Time.time)
         {
-            GameObject laser = Instantiate(_laserPrefab, transform.position, Quaternion.Euler(0, 0, 180));
-            laser.tag = "EnemyLaser";
+            GameObject laserGO = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+            Laser[] enemyLaser = laserGO.GetComponentsInChildren<Laser>();
+            foreach (var laser in enemyLaser)
+            {
+                laser.tag = "EnemyLaser";
+                laser.SetEnemyLaser();
+            }
+            
             if(_variancePct == 0)
                 _canFire = Time.time + _shootDelay;
             else
