@@ -1,11 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
-using Quaternion = UnityEngine.Quaternion;
-using Random = UnityEngine.Random;
-using Vector3 = UnityEngine.Vector3;
 
 public class Enemy : MonoBehaviour
 {
@@ -20,30 +13,32 @@ public class Enemy : MonoBehaviour
     private float _variance;
 
     private float _canFire;
-    void Start()
+    private void Start()
     {
         _canFire = Time.time + _firstShotDelay;
         _variance = _shootDelay * _variancePct / 100;
     }
 
-    void Update()
+    private void Update()
     {
         CalculateMovement();
-        if (_canFire < Time.time)
+        if (_canFire < Time.time) FireLaser();
+    }
+
+    private void FireLaser()
+    {
+        GameObject laserGO = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+        Laser[] enemyLaser = laserGO.GetComponentsInChildren<Laser>();
+        foreach (var laser in enemyLaser)
         {
-            GameObject laserGO = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
-            Laser[] enemyLaser = laserGO.GetComponentsInChildren<Laser>();
-            foreach (var laser in enemyLaser)
-            {
-                laser.tag = "EnemyLaser";
-                laser.SetEnemyLaser();
-            }
-            
-            if(_variancePct == 0)
-                _canFire = Time.time + _shootDelay;
-            else
-                _canFire = Time.time + Random.Range(_shootDelay - _variance, _shootDelay + _variance);
+            laser.tag = "EnemyLaser";
+            laser.SetEnemyLaser();
         }
+
+        if (_variancePct == 0)
+            _canFire = Time.time + _shootDelay;
+        else
+            _canFire = Time.time + Random.Range(_shootDelay - _variance, _shootDelay + _variance);
     }
 
     private void CalculateMovement()

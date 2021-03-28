@@ -1,11 +1,14 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField, Range(1, 7)]private int _lives = 3;
+    [SerializeField, Range(1, 7)] private int _lives = 3;
     [SerializeField] private float _speed = 3.0f;
+    [SerializeField] private float _speedboostMultiplier = 2.0f;
     [SerializeField] private GameObject _laserPrefab = default;
+    [SerializeField] private GameObject _tripleshotPrefab = default;
     [SerializeField] private float _laserSpawnYOffset = 0f;
     [SerializeField] private float _shootDelay = 0.4f;
 
@@ -14,9 +17,19 @@ public class Player : MonoBehaviour
     private float _xMinBounds = -9f;
     private float _yMaxBounds = .5f;
     private float _yMinBounds = -3f;
+    private bool _tripleShotActive;
+    [SerializeField] private bool _speedBostActive;
+
+    private WaitForSeconds _defaultPowerdownTime = new WaitForSeconds(5.0f);
+    private float _speedBoostTimer = 0.0f;
+    private bool _hasShields = false;
+    private int _shieldCharges = 1;
+
+    [SerializeField]private GameObject _shieldVisualizer = default;
 
     private void Start()
     {
+        
     }
 
     private void Update()
@@ -32,7 +45,8 @@ public class Player : MonoBehaviour
             FireLaser();
         }
 
-        var velocity = movement * Time.deltaTime * _speed;
+        _speedBostActive = _speedBoostTimer > Time.time;
+        var velocity = movement * Time.deltaTime * _speed * (_speedBostActive ? _speedboostMultiplier : 1);
         transform.Translate(velocity);
         CheckPosition();
     }
@@ -40,10 +54,16 @@ public class Player : MonoBehaviour
     private void FireLaser()
     {
         _canFire = Time.time + _shootDelay;
-
-        Vector3 laserSpawnPos = transform.position;
-        laserSpawnPos.y += _laserSpawnYOffset;
-        Instantiate(_laserPrefab, laserSpawnPos, Quaternion.identity);
+        if (!_tripleShotActive)
+        {
+            Vector3 laserSpawnPos = transform.position;
+            laserSpawnPos.y += _laserSpawnYOffset;
+            Instantiate(_laserPrefab, laserSpawnPos, Quaternion.identity);
+        }
+        else
+        {
+            Instantiate(_tripleshotPrefab, transform.position, Quaternion.identity);
+        }
     }
 
     private static Vector3 GetInput()
@@ -69,12 +89,22 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
-        _lives--;
-        if (_lives < 1)
+        if (_hasShields)
         {
-            SpawnManager.GameOver();
-            Destroy(gameObject);
+            _shieldCharges--;
+            if (_shieldCharges <= 0)
+            {
+                _hasShields = false;
+                _shieldVisualizer.SetActive(_hasShields);
+            }
         }
+
+        if (_hasShields) return;
+        
+        _lives--;
+        if (_lives > 0) return;
+        SpawnManager.GameOver();
+        Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -84,5 +114,46 @@ public class Player : MonoBehaviour
             Destroy(other.gameObject);
             Damage();
         }
+
+        if (other.TryGetComponent(out Powerup powerup))
+        {
+            ActivatePowerup(powerup.PowerupID);
+            Destroy(powerup.gameObject);
+        }
+    }
+
+    private void ActivatePowerup(int powerupID)
+    {
+        switch (powerupID)
+        {
+            case 0:
+                StartCoroutine(TripleShotRoutine());
+                break;
+            case 1:
+                ChargeSpeedBoost();
+                break;
+            case 2:
+                EnableShields();
+                break;
+        }
+    }
+
+    private void EnableShields()
+    {
+        _hasShields = true;
+        _shieldVisualizer.SetActive(_hasShields);
+    }
+
+    private IEnumerator TripleShotRoutine()
+    {
+        _tripleShotActive = true;
+        yield return _defaultPowerdownTime;
+        _tripleShotActive = false;
+    }
+
+    private void ChargeSpeedBoost()
+    {
+        if (_speedBoostTimer <= 0) _speedBoostTimer = Time.time + 5.0f;
+        else _speedBoostTimer += 5.0f;
     }
 }
