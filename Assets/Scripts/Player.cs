@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
     private int _shieldCharges = 1;
 
     private UIManager _uiManager = default;
+    private int _score = 0;
 
     private void Start()
     {
@@ -159,5 +160,11 @@ public class Player : MonoBehaviour
     {
         if (_speedBoostTimer <= 0) _speedBoostTimer = Time.time + 5.0f;
         else _speedBoostTimer += 5.0f;
+    }
+
+    public void AddScore(int score)
+    {
+        _score += score;
+        _uiManager.UpdateScoreText(_score);
     }
 }

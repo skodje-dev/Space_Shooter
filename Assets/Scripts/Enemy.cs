@@ -5,6 +5,7 @@ public class Enemy : MonoBehaviour
     [Header("Enemy Settings")]
     [SerializeField] private float _speed = 4.0f;
     [SerializeField] private GameObject _laserPrefab = default;
+    [SerializeField] private int _killScore = 10;
 
     [Header("Fire Settings")]
     private float _firstShotDelay = 1.0f;
@@ -57,6 +58,8 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("Laser"))
         {
             Destroy(other.gameObject);
+            Player _player = FindObjectOfType<Player>();
+            _player.AddScore(_killScore);
             Destroy(gameObject);
         }
 
