@@ -11,25 +11,25 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _tripleshotPrefab = default;
     [SerializeField] private float _laserSpawnYOffset = 0f;
     [SerializeField] private float _shootDelay = 0.4f;
-
+    [SerializeField] private GameObject _shieldVisualizer = default;
+    [SerializeField] private bool _speedBoostActive = false;
+    
+    private WaitForSeconds _defaultPowerdownTime = new WaitForSeconds(5.0f);
     private float _canFire = 0f;
     private float _xMaxBounds = 9f;
     private float _xMinBounds = -9f;
     private float _yMaxBounds = .5f;
     private float _yMinBounds = -3f;
     private bool _tripleShotActive;
-    [SerializeField] private bool _speedBostActive;
-
-    private WaitForSeconds _defaultPowerdownTime = new WaitForSeconds(5.0f);
     private float _speedBoostTimer = 0.0f;
     private bool _hasShields = false;
     private int _shieldCharges = 1;
 
-    [SerializeField]private GameObject _shieldVisualizer = default;
+    private UIManager _uiManager = default;
 
     private void Start()
     {
-        
+        _uiManager = FindObjectOfType<UIManager>();
     }
 
     private void Update()
@@ -45,8 +45,8 @@ public class Player : MonoBehaviour
             FireLaser();
         }
 
-        _speedBostActive = _speedBoostTimer > Time.time;
-        var velocity = movement * Time.deltaTime * _speed * (_speedBostActive ? _speedboostMultiplier : 1);
+        _speedBoostActive = _speedBoostTimer > Time.time;
+        var velocity = movement * Time.deltaTime * _speed * (_speedBoostActive ? _speedboostMultiplier : 1);
         transform.Translate(velocity);
         CheckPosition();
     }
@@ -97,12 +97,16 @@ public class Player : MonoBehaviour
                 _hasShields = false;
                 _shieldVisualizer.SetActive(_hasShields);
             }
+            return;
         }
 
-        if (_hasShields) return;
-        
-        _lives--;
-        if (_lives > 0) return;
+        if (_lives > 0)
+        {
+            _lives--;
+            _uiManager.UpdateLivesDisplay(_lives);
+            return;
+        }
+    
         SpawnManager.GameOver();
         Destroy(gameObject);
     }
