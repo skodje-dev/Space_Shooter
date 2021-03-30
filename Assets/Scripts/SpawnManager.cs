@@ -10,7 +10,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameObject _enemyPrefab;
     [SerializeField] private Transform _enemyContainer;
 
-    private static bool _gameOver;
+    private bool _gameOver;
     
     void Start()
     {
@@ -25,7 +25,6 @@ public class SpawnManager : MonoBehaviour
             Instantiate(_enemyPrefab, GetRandomSpawnPosition(), Quaternion.identity, _enemyContainer);
             yield return new WaitForSeconds(Random.Range(_minSpawnDelay, _maxSpawnDelay));
         }
-        Destroy(_enemyContainer.gameObject);
     }
 
     private Vector3 GetRandomSpawnPosition()
@@ -34,8 +33,10 @@ public class SpawnManager : MonoBehaviour
         return new Vector3(randomXPos, 8f, 0);
     }
 
-    public static void GameOver()
+    public void GameOver()
     {
         _gameOver = true;
+        StopCoroutine(EnemySpawnRoutine());
+        Destroy(_enemyContainer.gameObject);
     }
 }

@@ -26,11 +26,13 @@ public class Player : MonoBehaviour
     private int _shieldCharges = 1;
 
     private UIManager _uiManager = default;
+    private SpawnManager _spawnManager = default;
     private int _score = 0;
 
     private void Start()
     {
         _uiManager = FindObjectOfType<UIManager>();
+        _spawnManager = FindObjectOfType<SpawnManager>();
     }
 
     private void Update()
@@ -93,23 +95,20 @@ public class Player : MonoBehaviour
         if (_hasShields)
         {
             _shieldCharges--;
-            if (_shieldCharges <= 0)
-            {
-                _hasShields = false;
-                _shieldVisualizer.SetActive(_hasShields);
-            }
-            return;
+            if (_shieldCharges > 0) return;
+            _hasShields = false;
+            _shieldVisualizer.SetActive(_hasShields);
         }
-
-        if (_lives > 0)
+        else
         {
             _lives--;
             _uiManager.UpdateLivesDisplay(_lives);
-            return;
+
+            if (_lives > 0) return;
+            _spawnManager.GameOver();
+            _uiManager.GameOver();
+            Destroy(gameObject);
         }
-    
-        SpawnManager.GameOver();
-        Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
