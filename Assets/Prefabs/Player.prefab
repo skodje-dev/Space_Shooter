@@ -231,6 +231,7 @@ MonoBehaviour:
   _speedboostMultiplier: 2
   _laserPrefab: {fileID: 3346197831122398759, guid: 7884feabce3f9fc418e1408b1e8607c2, type: 3}
   _tripleshotPrefab: {fileID: 8386073928027049417, guid: 99e06e776fe71b3489bdd1d82a5e37b2, type: 3}
+  _explosionPrefab: {fileID: 3870182471088657907, guid: 85213771e9a325147b5391ddaa87fa9f, type: 3}
   _laserSpawnYOffset: 1.3
   _laserSoundClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _shootDelay: 0.4
@@ -423,12 +424,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 311525027114730492, guid: 356ef651b7138c543afe672582a5cb42, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 311525027114730492, guid: 356ef651b7138c543afe672582a5cb42, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 311525027114730492, guid: 356ef651b7138c543afe672582a5cb42, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.288
+      value: -1.15
       objectReference: {fileID: 0}
     - target: {fileID: 311525027114730492, guid: 356ef651b7138c543afe672582a5cb42, type: 3}
       propertyPath: m_LocalPosition.z

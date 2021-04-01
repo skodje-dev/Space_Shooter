@@ -531,3 +531,4 @@ MonoBehaviour:
   _livesDisplay: {fileID: 1156256189849823916}
   _scoreText: {fileID: 1156256190013469516}
   _gameOverPanel: {fileID: 1156256189002204263}
+  _restartText: {fileID: 1156256189156798645}

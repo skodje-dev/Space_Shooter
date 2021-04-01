@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
@@ -10,6 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float _speedboostMultiplier = 2.0f;
     [SerializeField] private GameObject _laserPrefab = default;
     [SerializeField] private GameObject _tripleshotPrefab = default;
+    [SerializeField] private GameObject _explosionPrefab = default;
     [SerializeField] private float _laserSpawnYOffset = 0f;
     [SerializeField] private AudioClip _laserSoundClip;
     [SerializeField] private float _shootDelay = 0.4f;
@@ -17,6 +16,8 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject[] _playerHurtVisualizer;
     [SerializeField] private GameObject _thruster = default;
     [SerializeField] private bool _speedBoostActive = false;
+    [SerializeField] private bool _thrustersActive = false;
+    [SerializeField] private bool _controlsEnabled = true;
     
     private WaitForSeconds _defaultPowerdownTime = new WaitForSeconds(5.0f);
     private float _canFire = 0f;
@@ -40,12 +41,12 @@ public class Player : MonoBehaviour
         _audio = GetComponent<AudioSource>();
         _uiManager = FindObjectOfType<UIManager>();
         _spawnManager = FindObjectOfType<SpawnManager>();
-        _thruster.SetActive(true);
+        _thruster.SetActive(_thrustersActive);
     }
 
     private void Update()
     {
-        CalculateMovement();
+        if(_controlsEnabled) CalculateMovement();
     }
 
     private void CalculateMovement()
@@ -118,8 +119,9 @@ public class Player : MonoBehaviour
             }
             if (_lives <= 0)
             {
-                _spawnManager.GameOver();
                 _uiManager.GameOver();
+                _spawnManager.GameOver();
+                Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
                 Destroy(gameObject);
             }
         }

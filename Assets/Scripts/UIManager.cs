@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image _livesDisplay;
     [SerializeField] private Text _scoreText;
     [SerializeField] private GameObject _gameOverPanel;
+    [SerializeField] private GameObject _restartText;
     private bool _gameOver;
 
     void Start()
@@ -23,7 +24,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if(_gameOver && Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(0);
+        if(_gameOver && Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(1);
     }
 
     public void UpdateLivesDisplay(int lives)
@@ -46,13 +47,13 @@ public class UIManager : MonoBehaviour
     {
         _livesDisplay.gameObject.SetActive(false);
         _gameOverPanel.SetActive(true);
-        GameObject restartText = _gameOverPanel.transform.Find("Restart_text").gameObject;
+        
         while(true)
         {
             yield return new WaitForSeconds(0.5f);
-            restartText.SetActive(true);
+            _restartText.SetActive(true);
             yield return new WaitForSeconds(0.75f);
-            restartText.SetActive(false);
+            _restartText.SetActive(false);
         }
     }
     
