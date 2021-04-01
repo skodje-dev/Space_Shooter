@@ -156,3 +156,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <PowerupID>k__BackingField: 0
   _speed: 3
+  _powerupCollectSound: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}

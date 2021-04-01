@@ -1,17 +1,21 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField, Range(1, 7)] private int _lives = 3;
+    [SerializeField, Range(1, 3)] private int _lives = 3;
     [SerializeField] private float _speed = 3.0f;
     [SerializeField] private float _speedboostMultiplier = 2.0f;
     [SerializeField] private GameObject _laserPrefab = default;
     [SerializeField] private GameObject _tripleshotPrefab = default;
     [SerializeField] private float _laserSpawnYOffset = 0f;
+    [SerializeField] private AudioClip _laserSoundClip;
     [SerializeField] private float _shootDelay = 0.4f;
     [SerializeField] private GameObject _shieldVisualizer = default;
+    [SerializeField] private GameObject[] _playerHurtVisualizer;
+    [SerializeField] private GameObject _thruster = default;
     [SerializeField] private bool _speedBoostActive = false;
     
     private WaitForSeconds _defaultPowerdownTime = new WaitForSeconds(5.0f);
@@ -25,14 +29,18 @@ public class Player : MonoBehaviour
     private bool _hasShields = false;
     private int _shieldCharges = 1;
 
+    private AudioSource _audio;
     private UIManager _uiManager = default;
     private SpawnManager _spawnManager = default;
     private int _score = 0;
+    private int _previousDamage = -1;
 
     private void Start()
     {
+        _audio = GetComponent<AudioSource>();
         _uiManager = FindObjectOfType<UIManager>();
         _spawnManager = FindObjectOfType<SpawnManager>();
+        _thruster.SetActive(true);
     }
 
     private void Update()
@@ -56,6 +64,7 @@ public class Player : MonoBehaviour
 
     private void FireLaser()
     {
+        _audio.PlayOneShot(_laserSoundClip);
         _canFire = Time.time + _shootDelay;
         if (!_tripleShotActive)
         {
@@ -102,12 +111,54 @@ public class Player : MonoBehaviour
         else
         {
             _lives--;
-            _uiManager.UpdateLivesDisplay(_lives);
+            if (_lives >= 0)
+            {
+                _uiManager.UpdateLivesDisplay(_lives);
+                ShowDamage();
+            }
+            if (_lives <= 0)
+            {
+                _spawnManager.GameOver();
+                _uiManager.GameOver();
+                Destroy(gameObject);
+            }
+        }
+    }
+    
+    private void ShowDamage()
+    {
+        int showDamage = Random.Range(0, 2);
+        switch (_previousDamage)
+        {
+            case -1:
+                _playerHurtVisualizer[showDamage].SetActive(true);
+                break;
+            case 0:
+                _playerHurtVisualizer[1].SetActive(true); //right wing
+                break;
+            case 1:
+                _playerHurtVisualizer[0].SetActive(true); //left wing
+                break;
+            default:
+                Debug.Log("No damage to apply");
+                break;
+        }
+        _previousDamage = showDamage;
+    }
 
-            if (_lives > 0) return;
-            _spawnManager.GameOver();
-            _uiManager.GameOver();
-            Destroy(gameObject);
+    private void FixDamage()
+    {
+        bool leftWingDamaged = _playerHurtVisualizer[0].activeSelf;
+        bool rightWingDamaged = _playerHurtVisualizer[1].activeSelf;
+        if (leftWingDamaged)
+        {
+            _playerHurtVisualizer[0].SetActive(false);
+            return;
+        }
+        else if(rightWingDamaged)
+        {
+            _playerHurtVisualizer[1].SetActive(false);
+            return;
         }
     }
 

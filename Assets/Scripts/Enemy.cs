@@ -14,8 +14,16 @@ public class Enemy : MonoBehaviour
     private float _variance;
 
     private float _canFire;
+    private Animator _anim;
+    private bool _dead = false;
+    [SerializeField] private AudioClip _explosionSoundClip;
+    [SerializeField] private AudioClip _laserSoundClip;
+    private AudioSource _audio;
+
     private void Start()
     {
+        _audio = GetComponent<AudioSource>();
+        _anim = GetComponent<Animator>();
         _canFire = Time.time + _firstShotDelay;
         _variance = _shootDelay * _variancePct / 100;
     }
@@ -23,7 +31,7 @@ public class Enemy : MonoBehaviour
     private void Update()
     {
         CalculateMovement();
-        if (_canFire < Time.time) FireLaser();
+        if (!_dead && _canFire < Time.time) FireLaser();
     }
 
     private void FireLaser()
@@ -35,6 +43,7 @@ public class Enemy : MonoBehaviour
             laser.tag = "EnemyLaser";
             laser.SetEnemyLaser();
         }
+        _audio.PlayOneShot(_laserSoundClip);
 
         if (_variancePct == 0)
             _canFire = Time.time + _shootDelay;
@@ -60,13 +69,27 @@ public class Enemy : MonoBehaviour
             Destroy(other.gameObject);
             Player _player = FindObjectOfType<Player>();
             _player.AddScore(_killScore);
-            Destroy(gameObject);
+            OnEnemyDeath();
         }
 
         if (other.TryGetComponent(out Player player))
         {
             player.Damage();
-            Destroy(gameObject);
+            OnEnemyDeath();
         }
+    }
+
+    private void OnEnemyDeath()
+    {
+        _dead = true;
+        _anim.SetTrigger("Destroy");
+        _speed = 0;
+        GetComponent<AudioSource>().PlayOneShot(_explosionSoundClip);
+        Destroy(GetComponent<Collider2D>());
+    }
+
+    private void DestroyGO()
+    {
+        Destroy(gameObject);
     }
 }
