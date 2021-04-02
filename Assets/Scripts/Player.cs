@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
     [SerializeField, Range(1, 3)] private int _lives = 3;
     [SerializeField] private float _speed = 3.0f;
     [SerializeField] private float _speedboostMultiplier = 2.0f;
+    [SerializeField] private float _thrusterMultiplier = 1.5f;
     [SerializeField] private GameObject _laserPrefab = default;
     [SerializeField] private GameObject _tripleshotPrefab = default;
     [SerializeField] private GameObject _explosionPrefab = default;
@@ -46,19 +47,33 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        _thrustersActive = Input.GetKey(KeyCode.LeftShift);
+        _thruster.SetActive(_thrustersActive);
         if(_controlsEnabled) CalculateMovement();
+        if (Input.GetKeyDown(KeyCode.Space) && _canFire < Time.time)
+        {
+            FireLaser();
+        }
+    }
+
+    private void EngageThrusters()
+    {
+        
+    }
+
+    private void RechargeThrusters()
+    {
+        
     }
 
     private void CalculateMovement()
     {
         var movement = GetInput();
-        if (Input.GetKeyDown(KeyCode.Space) && _canFire < Time.time)
-        {
-            FireLaser();
-        }
 
         _speedBoostActive = _speedBoostTimer > Time.time;
-        var velocity = movement * Time.deltaTime * _speed * (_speedBoostActive ? _speedboostMultiplier : 1);
+        float movementSpeed = _speed * (_speedBoostActive ? _speedboostMultiplier : 1) *
+                              (_thrustersActive ? _thrusterMultiplier : 1);
+        var velocity = movement * Time.deltaTime * movementSpeed;
         transform.Translate(velocity);
         CheckPosition();
     }
@@ -92,7 +107,7 @@ public class Player : MonoBehaviour
         var position = transform.position;
         position = new Vector3(position.x, Mathf.Clamp(position.y, _yMinBounds, _yMaxBounds));
         
-        if (transform.position.x < _xMinBounds)
+        if (position.x < _xMinBounds)
             position = new Vector3(_xMaxBounds, position.y);
         if (position.x > _xMaxBounds)
             position = new Vector3(_xMinBounds, position.y);
