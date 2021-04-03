@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float _speed = 3.0f;
     [SerializeField] private float _speedboostMultiplier = 2.0f;
     [SerializeField] private float _thrusterMultiplier = 1.5f;
+    [SerializeField, Range(0, 10)] private float _thrusterMaxDuration = 3.0f;
     [SerializeField, Range(0, 30), Tooltip("0 = infinite")] private int _maxAmmo = 15;
     private int _currentAmmo;
     [SerializeField] private GameObject _laserPrefab = default;
@@ -20,44 +21,51 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _shieldVisualizer = default;
     [SerializeField] private GameObject[] _playerHurtVisualizer;
     [SerializeField] private GameObject _thruster = default;
-    [SerializeField] private bool _speedBoostActive = false;
-    [SerializeField] private bool _thrustersActive = false;
-    [SerializeField] private bool _3stageShield = false;
+    [SerializeField] private bool _3StageShield = false;
+    [SerializeField] private bool _controlsEnabled = true;
 
-    private bool _controlsEnabled = true;
+    private bool _speedBoostActive = false;
+    private bool _thrustersActive = false;
+    private float _thrusterCharge = 0;
+    private bool _thrusterRecharging = false;
     private WaitForSeconds _defaultPowerdownTime = new WaitForSeconds(5.0f);
     private float _canFire = 0f;
-    private float _xMaxBounds = 9f;
-    private float _xMinBounds = -9f;
-    private float _yMaxBounds = .5f;
-    private float _yMinBounds = -3f;
     private bool _tripleShotActive;
     private float _speedBoostTimer = 0.0f;
     private bool _hasShields = false;
     private int _shieldCharges = 0;
 
-    private AudioSource _audio;
-    private UIManager _uiManager = default;
-    private SpawnManager _spawnManager = default;
+    private float _xMaxBounds = 9f;
+    private float _xMinBounds = -9f;
+    private float _yMaxBounds = .5f;
+    private float _yMinBounds = -3f;
     private int _score = 0;
     private int _previousDamage = -1;
 
+    private AudioSource _audio;
+    private UIManager _uiManager = default;
+    private SpawnManager _spawnManager = default;
+
     private void Start()
     {
-        _currentAmmo = _maxAmmo;
         _audio = GetComponent<AudioSource>();
         _uiManager = FindObjectOfType<UIManager>();
         _spawnManager = FindObjectOfType<SpawnManager>();
-        _thruster.SetActive(_thrustersActive);
-        _uiManager.UpdateAmmoText(_currentAmmo, _maxAmmo, _maxAmmo == 0);
         
+        _thruster.SetActive(_thrustersActive);
+        _thrusterCharge = _thrusterMaxDuration;
+        _currentAmmo = _maxAmmo;
+        _uiManager.UpdateAmmoText(_currentAmmo, _maxAmmo, _maxAmmo == 0);
     }
 
     private void Update()
     {
-        _thrustersActive = Input.GetKey(KeyCode.LeftShift);
-        _thruster.SetActive(_thrustersActive);
-        if(_controlsEnabled) CalculateMovement();
+        if(!_controlsEnabled) return;
+        //_thrusterCharge = Mathf.Clamp(_thrusterCharge, 0.0f, _thrusterDuration);
+        if (Input.GetKey(KeyCode.LeftShift) && !_thrusterRecharging) EngageThrusters();
+        else RechargeThrusters();
+
+        CalculateMovement();
         if (Input.GetKeyDown(KeyCode.Space) && _canFire < Time.time)
         {
             FireLaser();
@@ -66,12 +74,29 @@ public class Player : MonoBehaviour
 
     private void EngageThrusters()
     {
-        
+        if (_thrusterRecharging) return;
+        if (_thrusterCharge <= 0) _thrusterRecharging = true;
+
+        _thrustersActive = true;
+        _thruster.SetActive(_thrustersActive);
+        _thrusterCharge -= Time.deltaTime;
+        _uiManager.UpdateThrusterDisplay(_thrusterCharge, _thrusterMaxDuration);
     }
 
     private void RechargeThrusters()
     {
+        if (_thrusterCharge >= _thrusterMaxDuration)
+        {
+            _thrusterCharge = _thrusterMaxDuration;
+            _thrusterRecharging = false;
+            return;
+        }
         
+        _thrusterRecharging = true;
+        _thrustersActive = false;
+        _thruster.SetActive(_thrustersActive);
+        _thrusterCharge += Time.deltaTime;
+        _uiManager.UpdateThrusterDisplay(_thrusterCharge, _thrusterMaxDuration);
     }
 
     private void CalculateMovement()
@@ -141,7 +166,7 @@ public class Player : MonoBehaviour
         if (_hasShields)
         {
             _shieldCharges--;
-            if (_3stageShield) UpdateShieldVisual();
+            if (_3StageShield) UpdateShieldVisual();
             if (_shieldCharges > 0) return;
             _hasShields = false;
             _shieldVisualizer.SetActive(_hasShields);
@@ -263,7 +288,7 @@ public class Player : MonoBehaviour
     private void EnableShields()
     {
         _hasShields = true;
-        _shieldCharges = _3stageShield ? 3 : 1;
+        _shieldCharges = _3StageShield ? 3 : 1;
         _shieldVisualizer.SetActive(_hasShields);
     }
 

@@ -329,6 +329,7 @@ MonoBehaviour:
   _thruster: {fileID: 2238181416162592312}
   _speedBoostActive: 0
   _thrustersActive: 0
+  _3StageShield: 1
 --- !u!82 &1850553827
 AudioSource:
   m_ObjectHideFlags: 0
