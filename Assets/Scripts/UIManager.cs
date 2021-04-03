@@ -9,6 +9,8 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] private Sprite[] _livesImages;
     [SerializeField] private Image _livesDisplay;
+    [SerializeField] private Text _ammoText;
+    [SerializeField] private Image _thrusterChargeDisplay;
     [SerializeField] private Text _scoreText;
     [SerializeField] private GameObject _gameOverPanel;
     [SerializeField] private GameObject _restartText;
@@ -25,6 +27,17 @@ public class UIManager : MonoBehaviour
     private void Update()
     {
         if(_gameOver && Input.GetKeyDown(KeyCode.R)) SceneManager.LoadScene(1);
+    }
+
+    public void UpdateAmmoText(int currentAmmo, int maxAmmo, bool unlimited=false)
+    {
+        if (unlimited) _ammoText.enabled = false;
+        _ammoText.text = $"Ammo: {currentAmmo:D2}/{maxAmmo}";
+    }
+
+    public void UpdateThrusterDisplay(float current, float max)
+    {
+        _thrusterChargeDisplay.fillAmount = current / max;
     }
 
     public void UpdateLivesDisplay(int lives)

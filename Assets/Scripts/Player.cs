@@ -7,6 +7,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float _speed = 3.0f;
     [SerializeField] private float _speedboostMultiplier = 2.0f;
     [SerializeField] private float _thrusterMultiplier = 1.5f;
+    [SerializeField, Range(0, 30), Tooltip("0 = infinite")] private int _maxAmmo = 15;
+    private int _currentAmmo;
     [SerializeField] private GameObject _laserPrefab = default;
     [SerializeField] private GameObject _tripleshotPrefab = default;
     [SerializeField] private GameObject _explosionPrefab = default;
@@ -18,8 +20,8 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _thruster = default;
     [SerializeField] private bool _speedBoostActive = false;
     [SerializeField] private bool _thrustersActive = false;
-    [SerializeField] private bool _controlsEnabled = true;
-    
+
+    private bool _controlsEnabled = true;
     private WaitForSeconds _defaultPowerdownTime = new WaitForSeconds(5.0f);
     private float _canFire = 0f;
     private float _xMaxBounds = 9f;
@@ -39,10 +41,12 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        _currentAmmo = _maxAmmo;
         _audio = GetComponent<AudioSource>();
         _uiManager = FindObjectOfType<UIManager>();
         _spawnManager = FindObjectOfType<SpawnManager>();
         _thruster.SetActive(_thrustersActive);
+        _uiManager.UpdateAmmoText(_currentAmmo, _maxAmmo, _maxAmmo == 0);
     }
 
     private void Update()
@@ -80,6 +84,16 @@ public class Player : MonoBehaviour
 
     private void FireLaser()
     {
+        if (_maxAmmo != 0)
+        {
+            if (_currentAmmo <= 0)
+            {
+                return;
+            }
+            _currentAmmo--;
+            _uiManager.UpdateAmmoText(_currentAmmo, _maxAmmo);
+        }
+        
         _audio.PlayOneShot(_laserSoundClip);
         _canFire = Time.time + _shootDelay;
         if (!_tripleShotActive)
@@ -92,6 +106,7 @@ public class Player : MonoBehaviour
         {
             Instantiate(_tripleshotPrefab, transform.position, Quaternion.identity);
         }
+
     }
 
     private static Vector3 GetInput()

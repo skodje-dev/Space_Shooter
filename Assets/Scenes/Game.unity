@@ -296,6 +296,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 482c8e4c0346b704aa5f1760c3c989d5, type: 3}
   - {fileID: 21300000, guid: 9fe6f40efddf0b64fb68a3382b14a4db, type: 3}
   _livesDisplay: {fileID: 380015360}
+  _ammoText: {fileID: 2125299326}
+  _thrusterChargeDisplay: {fileID: 1195671008}
   _scoreText: {fileID: 216500960}
   _gameOverPanel: {fileID: 1227636171}
   _restartText: {fileID: 1073170713}
@@ -848,6 +850,10 @@ PrefabInstance:
     - target: {fileID: 2703679464531481828, guid: 4826d3dba745d3643ad85c88fa055f40, type: 3}
       propertyPath: _lives
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2703679464531481828, guid: 4826d3dba745d3643ad85c88fa055f40, type: 3}
+      propertyPath: _maxAmmo
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 2703679464531481828, guid: 4826d3dba745d3643ad85c88fa055f40, type: 3}
       propertyPath: _controlsEnabled
