@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -14,6 +15,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _explosionPrefab = default;
     [SerializeField] private float _laserSpawnYOffset = 0f;
     [SerializeField] private AudioClip _laserSoundClip;
+    [SerializeField] private AudioClip _ammoEmptyClip;
     [SerializeField] private float _shootDelay = 0.4f;
     [SerializeField] private GameObject _shieldVisualizer = default;
     [SerializeField] private GameObject[] _playerHurtVisualizer;
@@ -84,10 +86,13 @@ public class Player : MonoBehaviour
 
     private void FireLaser()
     {
+        _canFire = Time.time + _shootDelay;
+        
         if (_maxAmmo != 0)
         {
             if (_currentAmmo <= 0)
             {
+                _audio.PlayOneShot(_ammoEmptyClip);
                 return;
             }
             _currentAmmo--;
@@ -95,7 +100,6 @@ public class Player : MonoBehaviour
         }
         
         _audio.PlayOneShot(_laserSoundClip);
-        _canFire = Time.time + _shootDelay;
         if (!_tripleShotActive)
         {
             Vector3 laserSpawnPos = transform.position;
@@ -180,8 +184,12 @@ public class Player : MonoBehaviour
 
     private void FixDamage()
     {
-        bool leftWingDamaged = _playerHurtVisualizer[0].activeSelf;
-        bool rightWingDamaged = _playerHurtVisualizer[1].activeSelf;
+        if (_lives == 3) return;
+
+        _lives++;
+        _uiManager.UpdateLivesDisplay(_lives);
+        var leftWingDamaged = _playerHurtVisualizer[0].activeSelf;
+        var rightWingDamaged = _playerHurtVisualizer[1].activeSelf;
         if (leftWingDamaged)
         {
             _playerHurtVisualizer[0].SetActive(false);
@@ -222,7 +230,19 @@ public class Player : MonoBehaviour
             case 2:
                 EnableShields();
                 break;
+            case 3:
+                ReplenishAmmo();
+                break;
+            case 4:
+                FixDamage();
+                break;
         }
+    }
+
+    private void ReplenishAmmo()
+    {
+        _currentAmmo = _maxAmmo;
+        _uiManager.UpdateAmmoText(_currentAmmo, _maxAmmo);
     }
 
     private void EnableShields()

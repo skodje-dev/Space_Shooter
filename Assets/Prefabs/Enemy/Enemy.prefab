@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 5306663547291217662}
   - component: {fileID: 4128682062681505612}
   - component: {fileID: 1852489887165638896}
-  - component: {fileID: 3102088738399896085}
-  - component: {fileID: -7169184853476944311}
   - component: {fileID: 8510688377898607482}
+  - component: {fileID: -7169184853476944311}
+  - component: {fileID: 3102088738399896085}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -134,25 +134,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3102088738399896085
-MonoBehaviour:
+--- !u!95 &8510688377898607482
+Animator:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3102088738399896094}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4f4933c2062d6c419bb032d637b6f9e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _speed: 4
-  _laserPrefab: {fileID: 2028764803028518199, guid: 52f7d50c06794d74cb4d9b27bf51abca, type: 3}
-  _killScore: 10
-  _shootDelay: 2
-  _variancePct: 0
-  _explosionSoundClip: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
-  _laserSoundClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1f6698c606c82454abff976e817d03db, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!82 &-7169184853476944311
 AudioSource:
   m_ObjectHideFlags: 0
@@ -249,22 +249,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!95 &8510688377898607482
-Animator:
-  serializedVersion: 3
+--- !u!114 &3102088738399896085
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3102088738399896094}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 1f6698c606c82454abff976e817d03db, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4f4933c2062d6c419bb032d637b6f9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _speed: 4
+  _laserPrefab: {fileID: 2028764803028518199, guid: 52f7d50c06794d74cb4d9b27bf51abca, type: 3}
+  _killScore: 10
+  _shootDelay: 2
+  _variancePct: 0
+  _explosionSoundClip: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
+  _laserSoundClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
