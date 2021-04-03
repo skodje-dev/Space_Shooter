@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     private int _currentAmmo;
     [SerializeField] private GameObject _laserPrefab = default;
     [SerializeField] private GameObject _tripleshotPrefab = default;
+    [SerializeField] private GameObject _seekershotPrefab = default;
     [SerializeField] private GameObject _explosionPrefab = default;
     [SerializeField] private float _laserSpawnYOffset = 0f;
     [SerializeField] private AudioClip _laserSoundClip;
@@ -31,6 +32,7 @@ public class Player : MonoBehaviour
     private WaitForSeconds _defaultPowerdownTime = new WaitForSeconds(5.0f);
     private float _canFire = 0f;
     private bool _tripleShotActive;
+    private bool _seekerShotActive;
     private float _speedBoostTimer = 0.0f;
     private bool _hasShields = false;
     private int _shieldCharges = 0;
@@ -53,7 +55,6 @@ public class Player : MonoBehaviour
         _spawnManager = FindObjectOfType<SpawnManager>();
         
         _thruster.SetActive(_thrustersActive);
-        _thrusterCharge = _thrusterMaxDuration;
         _currentAmmo = _maxAmmo;
         _uiManager.UpdateAmmoText(_currentAmmo, _maxAmmo, _maxAmmo == 0);
     }
@@ -61,15 +62,13 @@ public class Player : MonoBehaviour
     private void Update()
     {
         if(!_controlsEnabled) return;
-        //_thrusterCharge = Mathf.Clamp(_thrusterCharge, 0.0f, _thrusterDuration);
         if (Input.GetKey(KeyCode.LeftShift) && !_thrusterRecharging) EngageThrusters();
         else RechargeThrusters();
 
-        CalculateMovement();
         if (Input.GetKeyDown(KeyCode.Space) && _canFire < Time.time)
-        {
             FireLaser();
-        }
+        
+        CalculateMovement();
     }
 
     private void EngageThrusters()
@@ -127,15 +126,19 @@ public class Player : MonoBehaviour
         }
         
         _audio.PlayOneShot(_laserSoundClip);
-        if (!_tripleShotActive)
+        if (_tripleShotActive)
+        {
+            Instantiate(_tripleshotPrefab, transform.position, Quaternion.identity);
+        }
+        else if (_seekerShotActive)
+        {
+            Instantiate(_seekershotPrefab, transform.position, Quaternion.identity);
+        }
+        else
         {
             Vector3 laserSpawnPos = transform.position;
             laserSpawnPos.y += _laserSpawnYOffset;
             Instantiate(_laserPrefab, laserSpawnPos, Quaternion.identity);
-        }
-        else
-        {
-            Instantiate(_tripleshotPrefab, transform.position, Quaternion.identity);
         }
 
     }
@@ -276,6 +279,9 @@ public class Player : MonoBehaviour
             case 4:
                 FixDamage();
                 break;
+            case 5:
+                StartCoroutine(SeekerShotRoutine());
+                break;
         }
     }
 
@@ -297,6 +303,12 @@ public class Player : MonoBehaviour
         _tripleShotActive = true;
         yield return _defaultPowerdownTime;
         _tripleShotActive = false;
+    }
+    private IEnumerator SeekerShotRoutine()
+    {
+        _seekerShotActive = true;
+        yield return _defaultPowerdownTime;
+        _seekerShotActive  = false;
     }
 
     private void ChargeSpeedBoost()

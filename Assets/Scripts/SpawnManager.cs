@@ -21,12 +21,18 @@ public class SpawnManager : MonoBehaviour
 
     private IEnumerator PowerupSpawnRoutine()
     {
+        int counter = 0;
         yield return new WaitForSeconds(_timeBeforeFirstSpawn);
         while (!_gameOver)
         {
             int randomPowerup = Random.Range(0, _powerupPrefabs.Length);
+            if (counter < 8 && randomPowerup == 5)
+                randomPowerup = Random.Range(0, _powerupPrefabs.Length);
+            
             Instantiate(_powerupPrefabs[randomPowerup], GetRandomSpawnPosition(), Quaternion.identity, _enemyContainer);
             yield return new WaitForSeconds(Random.Range(_minSpawnDelay, _maxSpawnDelay));
+            counter++;
+            
         }
     }
 

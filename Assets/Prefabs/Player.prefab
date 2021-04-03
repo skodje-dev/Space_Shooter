@@ -314,9 +314,11 @@ MonoBehaviour:
   _speed: 6
   _speedboostMultiplier: 2
   _thrusterMultiplier: 1.5
+  _thrusterMaxDuration: 3
   _maxAmmo: 15
   _laserPrefab: {fileID: 3346197831122398759, guid: 7884feabce3f9fc418e1408b1e8607c2, type: 3}
   _tripleshotPrefab: {fileID: 8386073928027049417, guid: 99e06e776fe71b3489bdd1d82a5e37b2, type: 3}
+  _seekershotPrefab: {fileID: 380486570960140169, guid: f760320060e195d4f836a458d7258931, type: 3}
   _explosionPrefab: {fileID: 3870182471088657907, guid: 85213771e9a325147b5391ddaa87fa9f, type: 3}
   _laserSpawnYOffset: 1.3
   _laserSoundClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
@@ -327,9 +329,8 @@ MonoBehaviour:
   - {fileID: 5862712160428180681}
   - {fileID: 6756115113660439239}
   _thruster: {fileID: 2238181416162592312}
-  _speedBoostActive: 0
-  _thrustersActive: 0
   _3StageShield: 1
+  _controlsEnabled: 1
 --- !u!82 &1850553827
 AudioSource:
   m_ObjectHideFlags: 0
