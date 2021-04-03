@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _thruster = default;
     [SerializeField] private bool _speedBoostActive = false;
     [SerializeField] private bool _thrustersActive = false;
+    [SerializeField] private bool _3stageShield = false;
 
     private bool _controlsEnabled = true;
     private WaitForSeconds _defaultPowerdownTime = new WaitForSeconds(5.0f);
@@ -33,7 +34,7 @@ public class Player : MonoBehaviour
     private bool _tripleShotActive;
     private float _speedBoostTimer = 0.0f;
     private bool _hasShields = false;
-    private int _shieldCharges = 1;
+    private int _shieldCharges = 0;
 
     private AudioSource _audio;
     private UIManager _uiManager = default;
@@ -49,6 +50,7 @@ public class Player : MonoBehaviour
         _spawnManager = FindObjectOfType<SpawnManager>();
         _thruster.SetActive(_thrustersActive);
         _uiManager.UpdateAmmoText(_currentAmmo, _maxAmmo, _maxAmmo == 0);
+        
     }
 
     private void Update()
@@ -139,6 +141,7 @@ public class Player : MonoBehaviour
         if (_hasShields)
         {
             _shieldCharges--;
+            if (_3stageShield) UpdateShieldVisual();
             if (_shieldCharges > 0) return;
             _hasShields = false;
             _shieldVisualizer.SetActive(_hasShields);
@@ -160,7 +163,19 @@ public class Player : MonoBehaviour
             }
         }
     }
-    
+
+    private void UpdateShieldVisual()
+    {
+        var shieldSprite = _shieldVisualizer.GetComponent<SpriteRenderer>();
+        shieldSprite.color = _shieldCharges switch
+        {
+            0 => Color.white,
+            1 => new Color(1, 1, 1, 0.2f),
+            2 => new Color(1, 1, 1, 0.6f),
+            _ => shieldSprite.color
+        };
+    }
+
     private void ShowDamage()
     {
         int showDamage = Random.Range(0, 2);
@@ -248,6 +263,7 @@ public class Player : MonoBehaviour
     private void EnableShields()
     {
         _hasShields = true;
+        _shieldCharges = _3stageShield ? 3 : 1;
         _shieldVisualizer.SetActive(_hasShields);
     }
 
