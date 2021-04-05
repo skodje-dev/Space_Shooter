@@ -62,6 +62,7 @@ public class Player : MonoBehaviour
     private void Update()
     {
         if(!_controlsEnabled) return;
+        
         if (Input.GetKey(KeyCode.LeftShift) && !_thrusterRecharging) EngageThrusters();
         else RechargeThrusters();
 
@@ -281,6 +282,14 @@ public class Player : MonoBehaviour
                 break;
             case 5:
                 StartCoroutine(SeekerShotRoutine());
+                break;
+            case 6:
+                // Target closest enemy
+                Debug.Log("IMPLEMENT TARGETED SHOT");
+                break;
+            case 7:
+                // negative powerup
+                Debug.Log("IMPLEMENT NEGATIVE POWERUP");
                 break;
         }
     }

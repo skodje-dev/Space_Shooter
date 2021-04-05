@@ -9,7 +9,7 @@ public class Laser : MonoBehaviour
 
     private void Start()
     {
-        _direction = _enemyLaser ? Vector3.down : Vector3.up;
+        _direction = _enemyLaser ? -transform.up : transform.up;
     }
 
     void Update()

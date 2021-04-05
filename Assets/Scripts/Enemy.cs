@@ -3,6 +3,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [Header("Enemy Settings")]
+    [SerializeField] private bool _diagonalMovement = false;
     [SerializeField] private float _speed = 4.0f;
     [SerializeField] private GameObject _laserPrefab = default;
     [SerializeField] private int _killScore = 10;
@@ -11,17 +12,22 @@ public class Enemy : MonoBehaviour
     private float _firstShotDelay = 1.0f;
     [SerializeField, Range(0.5f, 5.0f)] private float _shootDelay = 2.0f;
     [SerializeField, Range(0, 100)] private int _variancePct = 0;
-    private float _variance;
 
-    private float _canFire;
-    private Animator _anim;
-    private bool _dead = false;
     [SerializeField] private AudioClip _explosionSoundClip;
     [SerializeField] private AudioClip _laserSoundClip;
+    private float _variance;
+    private float _canFire;
+    private bool _dead = false;
+    private Animator _anim;
     private AudioSource _audio;
 
     private void Start()
     {
+        if (_diagonalMovement)
+        {
+            int randomDiag = Random.Range(0, 2);
+            transform.Rotate(transform.forward, randomDiag == 0 ? 45 : -45);
+        }
         _audio = GetComponent<AudioSource>();
         _anim = GetComponent<Animator>();
         _canFire = Time.time + _firstShotDelay;
@@ -36,7 +42,7 @@ public class Enemy : MonoBehaviour
 
     private void FireLaser()
     {
-        GameObject laserGO = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+        GameObject laserGO = Instantiate(_laserPrefab, transform.position, transform.rotation);
         Laser[] enemyLaser = laserGO.GetComponentsInChildren<Laser>();
         foreach (var laser in enemyLaser)
         {
@@ -53,7 +59,20 @@ public class Enemy : MonoBehaviour
 
     private void CalculateMovement()
     {
-        transform.Translate(Vector3.down * Time.deltaTime * _speed);
+        transform.position += -transform.up * Time.deltaTime * _speed;
+
+        if (transform.position.y < -8f || _diagonalMovement && transform.position.x < -11f || _diagonalMovement && transform.position.x > 11f)
+        {
+            float randomXPos = Random.Range(-9.0f, 9.0f);
+            transform.position = new Vector3(randomXPos, 8f, 0);
+        }
+    }
+
+    private void AlternateMovement()
+    {
+        Vector3 direction = -transform.up;
+        direction.x +=  Mathf.Sin(Time.time) * 0.33f;
+        transform.Translate(direction * Time.deltaTime * _speed);
 
         if (transform.position.y < -8f)
         {
@@ -66,10 +85,10 @@ public class Enemy : MonoBehaviour
     {
         if (other.CompareTag("Laser"))
         {
+            OnEnemyDeath();
             Destroy(other.gameObject);
             Player _player = FindObjectOfType<Player>();
             _player.AddScore(_killScore);
-            OnEnemyDeath();
         }
 
         if (other.TryGetComponent(out Player player))
@@ -81,8 +100,8 @@ public class Enemy : MonoBehaviour
 
     private void OnEnemyDeath()
     {
-        _dead = true;
         _anim.SetTrigger("Destroy");
+        _dead = true;
         _speed = 0;
         GetComponent<AudioSource>().PlayOneShot(_explosionSoundClip);
         Destroy(GetComponent<Collider2D>());

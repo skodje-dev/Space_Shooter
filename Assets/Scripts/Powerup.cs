@@ -9,6 +9,8 @@ public class Powerup : MonoBehaviour
     private void Update()
     {
         transform.Translate(Vector3.down * Time.deltaTime * _speed);
+        if (Input.GetKey(KeyCode.C))
+            transform.position = Vector3.MoveTowards(transform.position, GameManager.Instance.GetPlayerTransform().position, Time.deltaTime * _speed);
         if(transform.position.y < -8f) Destroy(gameObject);
     }
 
