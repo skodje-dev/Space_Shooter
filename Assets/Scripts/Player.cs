@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _laserPrefab = default;
     [SerializeField] private GameObject _tripleshotPrefab = default;
     [SerializeField] private GameObject _seekershotPrefab = default;
+    [SerializeField] private GameObject _targetedshotPrefab = default;
     [SerializeField] private GameObject _explosionPrefab = default;
     [SerializeField] private float _laserSpawnYOffset = 0f;
     [SerializeField] private AudioClip _laserSoundClip;
@@ -47,6 +48,7 @@ public class Player : MonoBehaviour
     private AudioSource _audio;
     private UIManager _uiManager = default;
     private SpawnManager _spawnManager = default;
+    private bool _targetedShotActive;
 
     private void Start()
     {
@@ -134,6 +136,10 @@ public class Player : MonoBehaviour
         else if (_seekerShotActive)
         {
             Instantiate(_seekershotPrefab, transform.position, Quaternion.identity);
+        }
+        else if (_targetedShotActive)
+        {
+            Instantiate(_targetedshotPrefab, transform.position, Quaternion.identity);
         }
         else
         {
@@ -237,12 +243,10 @@ public class Player : MonoBehaviour
         if (leftWingDamaged)
         {
             _playerHurtVisualizer[0].SetActive(false);
-            return;
         }
         else if(rightWingDamaged)
         {
             _playerHurtVisualizer[1].SetActive(false);
-            return;
         }
     }
 
@@ -284,12 +288,10 @@ public class Player : MonoBehaviour
                 StartCoroutine(SeekerShotRoutine());
                 break;
             case 6:
-                // Target closest enemy
-                Debug.Log("IMPLEMENT TARGETED SHOT");
+                StartCoroutine(TargetedShotRoutine());
                 break;
             case 7:
-                // negative powerup
-                Debug.Log("IMPLEMENT NEGATIVE POWERUP");
+                StartCoroutine(NegativePowerupRoutine());
                 break;
         }
     }
@@ -309,15 +311,35 @@ public class Player : MonoBehaviour
 
     private IEnumerator TripleShotRoutine()
     {
+        _seekerShotActive = false;
+        _targetedShotActive = false;
         _tripleShotActive = true;
         yield return _defaultPowerdownTime;
         _tripleShotActive = false;
     }
+    private IEnumerator TargetedShotRoutine()
+    {
+        _seekerShotActive = false;
+        _tripleShotActive = false;
+        _targetedShotActive = true;
+        yield return _defaultPowerdownTime;
+        _targetedShotActive = false;
+    }
     private IEnumerator SeekerShotRoutine()
     {
+        _tripleShotActive = false;
+        _targetedShotActive = false;
         _seekerShotActive = true;
         yield return _defaultPowerdownTime;
         _seekerShotActive  = false;
+    }
+
+    private IEnumerator NegativePowerupRoutine()
+    {
+        float shootDelay = _shootDelay;
+        _shootDelay *= 2;
+        yield return _defaultPowerdownTime;
+        _shootDelay = shootDelay;
     }
 
     private void ChargeSpeedBoost()

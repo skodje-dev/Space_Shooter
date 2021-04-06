@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1602223830
 Transform:
   m_ObjectHideFlags: 0
@@ -319,6 +319,7 @@ MonoBehaviour:
   _laserPrefab: {fileID: 3346197831122398759, guid: 7884feabce3f9fc418e1408b1e8607c2, type: 3}
   _tripleshotPrefab: {fileID: 8386073928027049417, guid: 99e06e776fe71b3489bdd1d82a5e37b2, type: 3}
   _seekershotPrefab: {fileID: 380486570960140169, guid: f760320060e195d4f836a458d7258931, type: 3}
+  _targetedshotPrefab: {fileID: 3735554783797837316, guid: 7a92b639a04abb740a58e4f7788c1b37, type: 3}
   _explosionPrefab: {fileID: 3870182471088657907, guid: 85213771e9a325147b5391ddaa87fa9f, type: 3}
   _laserSpawnYOffset: 1.3
   _laserSoundClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}

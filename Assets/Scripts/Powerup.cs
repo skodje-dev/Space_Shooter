@@ -16,6 +16,7 @@ public class Powerup : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (AudioManager.Instance && other.GetComponent<Player>()) AudioManager.Instance.PlayAudioClip(_powerupCollectSound);
+        if (other.GetComponent<Laser>() && other.CompareTag("EnemyLaser")) Destroy(gameObject);
+        if (other.GetComponent<Player>() && AudioManager.Instance) AudioManager.Instance.PlayAudioClip(_powerupCollectSound);
     }
 }
